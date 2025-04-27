@@ -43,16 +43,6 @@
 3. Create profiles to organize your credentials
 4. Add and manage credentials within profiles
 
-## Project Structure
-
-PsW/
-├── src/
-│   ├── core/         # Business logic
-│   ├── ui/           # User interface
-│   └── utils/        # Utilities and helpers
-├── data/             # Data storage (encrypted)
-├── tests/            # Unit tests
-└── docs/             # Documentation
 
 ## Security
 
