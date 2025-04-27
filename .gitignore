@@ -1,0 +1,53 @@
+# File di sistema
+__pycache__/
+*.py[cod]
+*$py.class
+.DS_Store
+
+# File di ambiente e configurazione
+.env
+.venv
+env/
+venv/
+ENV/
+
+# File di build
+*.egg-info/
+dist/
+build/
+*.egg
+
+# File di IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.cursor/
+
+# File di dati sensibili
+data/*.json
+!data/example.json
+*.key
+*.pem
+
+# File temporanei
+*.log
+*.tmp
+.coverage
+htmlcov/
+
+# File di cache
+.pytest_cache/
+.coverage
+.tox/
+.nox/
+
+# File di documentazione generati
+docs/_build/
+site/
+
+# File di documentazione privati
+descrizione.md
+progress.md
+PRIVATE*.md
+TODO.md 
