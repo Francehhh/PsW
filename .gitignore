@@ -59,4 +59,7 @@ htmlcov/
 
 # File di documentazione generati
 docs/_build/
-site/ 
+site/
+
+# Documentazione e layout UI
+PsWLayout.md 

@@ -4,7 +4,7 @@ Widget che mostra la lista delle credenziali di un profilo.
 
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel,
-    QPushButton, QFrame, QScrollArea, QCheckBox
+    QPushButton, QFrame, QScrollArea, QCheckBox, QApplication, QStyle
 )
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont, QCursor
@@ -57,22 +57,19 @@ class CredentialList(QWidget):
                 background-color: #1976d2;
             }
             QFrame#credentialBox {
-                background-color: #2d364d;
-                border: 1px solid #3d4663;
-                border-radius: 10px;
-                margin: 4px 8px;
-                padding: 12px;
-                min-height: 75px;
-            }
-            QFrame#credentialBox[selected="true"] {
-                background-color: #364061;
-                border: 2px solid #4a9eff;
-                margin: 3px 7px;
+                background: #232a36;
+                border: 2px solid #3d4663;
+                border-radius: 8px;
+                margin: 6px 0;
+                padding: 12px 16px;
             }
             QFrame#credentialBox:hover {
-                background-color: #364061;
+                background: #28304a;
                 border: 2px solid #4a9eff;
-                margin: 3px 7px;
+            }
+            QFrame#credentialBox[selected="true"] {
+                background: #283d61;
+                border: 2.5px solid #4a9eff;
             }
             QLabel#appNameLabel {
                 color: #ffffff;
@@ -130,6 +127,18 @@ class CredentialList(QWidget):
             QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
                 background: none;
             }
+            QWidget#fieldBox {
+                background: rgba(74,158,255,0.10);
+                border-radius: 6px;
+                padding: 6px 10px;
+                margin-right: 8px;
+                margin-bottom: 4px;
+            }
+            QLabel#fieldLabel, QLabel#fieldValue {
+                background: transparent;
+                color: #fff;
+                font-size: 13px;
+            }
         """)
         main_layout = QVBoxLayout(self)
         main_layout.setSpacing(0)
@@ -185,65 +194,63 @@ class CredentialList(QWidget):
         checkbox.setStyleSheet("QCheckBox { color: white; }")
         top_layout.addWidget(checkbox)
         
-        # Layout per il nome dell'app con etichetta
-        app_name_layout = QHBoxLayout()
-        app_name_layout.setSpacing(4)
-        
+        # Box unificato per App
+        app_field_box = QWidget()
+        app_field_box.setObjectName("fieldBox")
+        app_field_layout = QHBoxLayout(app_field_box)
+        app_field_layout.setContentsMargins(8, 2, 8, 2)
+        app_field_layout.setSpacing(4)
         app_label = QLabel("App:")
         app_label.setObjectName("fieldLabel")
-        app_name_layout.addWidget(app_label)
-        
+        app_field_layout.addWidget(app_label)
         app_name = QLabel(credential.app_name)
-        app_name.setObjectName("appNameLabel")
-        app_name_layout.addWidget(app_name)
-        app_name_layout.addStretch()
+        app_name.setObjectName("fieldValue")
+        app_field_layout.addWidget(app_name)
+        top_layout.addWidget(app_field_box)
         
-        top_layout.addLayout(app_name_layout)
+        top_layout.addStretch()
         
-        # Pulsante copia password
-        copy_btn = QPushButton("Copia")
-        copy_btn.setObjectName("copyBtn")
-        copy_btn.clicked.connect(lambda: self.copy_password(credential))
-        top_layout.addWidget(copy_btn)
+        # Pulsante modifica (ex copia password)
+        edit_btn = QPushButton("Modifica")
+        edit_btn.setObjectName("editBtn")
+        edit_btn.clicked.connect(lambda: self.on_edit_credential(credential, cred_box))
+        top_layout.addWidget(edit_btn)
         
         box_layout.addLayout(top_layout)
         
-        # Layout per username con etichetta
-        username_layout = QHBoxLayout()
-        username_layout.setSpacing(4)
-        
+        # Box unificato per Username
+        username_field_box = QWidget()
+        username_field_box.setObjectName("fieldBox")
+        username_field_layout = QHBoxLayout(username_field_box)
+        username_field_layout.setContentsMargins(8, 2, 8, 2)
+        username_field_layout.setSpacing(4)
         username_label = QLabel("Username:")
         username_label.setObjectName("fieldLabel")
-        username_layout.addWidget(username_label)
-        
+        username_field_layout.addWidget(username_label)
         username = QLabel(credential.username)
-        username.setObjectName("usernameLabel")
-        username_layout.addWidget(username)
-        username_layout.addStretch()
+        username.setObjectName("fieldValue")
+        username_field_layout.addWidget(username)
+        username_field_layout.addStretch()
+        box_layout.addWidget(username_field_box)
         
-        box_layout.addLayout(username_layout)
-        
-        # Gestione del click sulla credenziale
-        cred_box.mousePressEvent = lambda e: self.on_credential_clicked(e, credential, cred_box)
+        # Nessuna gestione del click sul box
+        # cred_box.mousePressEvent = lambda e: self.on_credential_clicked(e, credential, cred_box)
         
         self.list_layout.addWidget(cred_box)
         self.credentials.append(credential)
         
-    def on_credential_clicked(self, event, credential, box):
-        """Gestisce il click su una credenziale."""
-        if event.button() == Qt.LeftButton:
-            # Deseleziona tutte le altre credenziali
-            for i in range(self.list_layout.count()):
-                item = self.list_layout.itemAt(i)
-                if item and item.widget():
-                    item.widget().setProperty("selected", False)
-                    item.widget().setStyleSheet(item.widget().styleSheet())
-            
-            # Seleziona questa credenziale
-            box.setProperty("selected", True)
-            box.setStyleSheet(box.styleSheet())
-            self.selected_credential = credential
-            self.credential_selected.emit(credential)
+    def on_edit_credential(self, credential, box):
+        # Deseleziona tutte le altre credenziali
+        for i in range(self.list_layout.count()):
+            item = self.list_layout.itemAt(i)
+            if item and item.widget():
+                item.widget().setProperty("selected", False)
+                item.widget().setStyleSheet(item.widget().styleSheet())
+        # Seleziona questa credenziale
+        box.setProperty("selected", True)
+        box.setStyleSheet(box.styleSheet())
+        self.selected_credential = credential
+        self.credential_selected.emit(credential)
         
     def copy_password(self, credential):
         """Copia la password negli appunti."""
@@ -251,6 +258,10 @@ class CredentialList(QWidget):
         if clipboard:
             clipboard.setText(credential.password)
             
+    def copy_to_clipboard(self, value):
+        clipboard = QApplication.clipboard()
+        clipboard.setText(value)
+        
     def clear(self):
         """Rimuove tutte le credenziali dalla lista."""
         while self.list_layout.count():

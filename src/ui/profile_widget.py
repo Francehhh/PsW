@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
     QLabel, QFrame, QScrollArea, QMessageBox,
     QDialog, QFormLayout, QLineEdit, QTextEdit,
-    QStackedWidget, QSplitter, QGroupBox
+    QStackedWidget, QSplitter, QGroupBox, QApplication, QStyle
 )
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont
@@ -209,17 +209,72 @@ class ProfileWidget(QWidget):
         detail_layout.setSpacing(16)
         self.credential_group = QGroupBox("Dettagli Credenziale")
         credential_layout = QFormLayout(self.credential_group)
+        # Nome App
         self.app_name_edit = QLineEdit()
-        credential_layout.addRow("Nome App:", self.app_name_edit)
+        app_name_row = QHBoxLayout()
+        app_name_row.addWidget(self.app_name_edit)
+        app_name_copy_btn = QPushButton()
+        app_name_copy_btn.setObjectName("copyValueBtn")
+        app_name_copy_btn.setToolTip("Copia nome app")
+        app_name_copy_btn.setFixedSize(22, 22)
+        app_name_copy_btn.setStyleSheet("QPushButton#copyValueBtn { background: transparent; border: none; padding: 0; } QPushButton#copyValueBtn:hover { background: #4a9eff; border-radius: 4px; }")
+        app_name_copy_btn.setIcon(QApplication.style().standardIcon(QStyle.SP_FileDialogDetailedView))
+        app_name_copy_btn.clicked.connect(lambda: self.copy_to_clipboard(self.app_name_edit.text()))
+        app_name_row.addWidget(app_name_copy_btn)
+        credential_layout.addRow("Nome App:", app_name_row)
+        # Username
         self.username_edit = QLineEdit()
-        credential_layout.addRow("Username:", self.username_edit)
+        username_row = QHBoxLayout()
+        username_row.addWidget(self.username_edit)
+        username_copy_btn = QPushButton()
+        username_copy_btn.setObjectName("copyValueBtn")
+        username_copy_btn.setToolTip("Copia username")
+        username_copy_btn.setFixedSize(22, 22)
+        username_copy_btn.setStyleSheet("QPushButton#copyValueBtn { background: transparent; border: none; padding: 0; } QPushButton#copyValueBtn:hover { background: #4a9eff; border-radius: 4px; }")
+        username_copy_btn.setIcon(QApplication.style().standardIcon(QStyle.SP_FileDialogDetailedView))
+        username_copy_btn.clicked.connect(lambda: self.copy_to_clipboard(self.username_edit.text()))
+        username_row.addWidget(username_copy_btn)
+        credential_layout.addRow("Username:", username_row)
+        # Password
         self.password_edit = QLineEdit()
         self.password_edit.setEchoMode(QLineEdit.Password)
-        credential_layout.addRow("Password:", self.password_edit)
+        password_row = QHBoxLayout()
+        password_row.addWidget(self.password_edit)
+        password_copy_btn = QPushButton()
+        password_copy_btn.setObjectName("copyValueBtn")
+        password_copy_btn.setToolTip("Copia password")
+        password_copy_btn.setFixedSize(22, 22)
+        password_copy_btn.setStyleSheet("QPushButton#copyValueBtn { background: transparent; border: none; padding: 0; } QPushButton#copyValueBtn:hover { background: #4a9eff; border-radius: 4px; }")
+        password_copy_btn.setIcon(QApplication.style().standardIcon(QStyle.SP_FileDialogDetailedView))
+        password_copy_btn.clicked.connect(lambda: self.copy_to_clipboard(self.password_edit.text()))
+        password_row.addWidget(password_copy_btn)
+        credential_layout.addRow("Password:", password_row)
+        # URL
         self.url_edit = QLineEdit()
-        credential_layout.addRow("URL:", self.url_edit)
+        url_row = QHBoxLayout()
+        url_row.addWidget(self.url_edit)
+        url_copy_btn = QPushButton()
+        url_copy_btn.setObjectName("copyValueBtn")
+        url_copy_btn.setToolTip("Copia URL")
+        url_copy_btn.setFixedSize(22, 22)
+        url_copy_btn.setStyleSheet("QPushButton#copyValueBtn { background: transparent; border: none; padding: 0; } QPushButton#copyValueBtn:hover { background: #4a9eff; border-radius: 4px; }")
+        url_copy_btn.setIcon(QApplication.style().standardIcon(QStyle.SP_FileDialogDetailedView))
+        url_copy_btn.clicked.connect(lambda: self.copy_to_clipboard(self.url_edit.text()))
+        url_row.addWidget(url_copy_btn)
+        credential_layout.addRow("URL:", url_row)
+        # Note
         self.notes_edit = QTextEdit()
-        credential_layout.addRow("Note:", self.notes_edit)
+        notes_row = QHBoxLayout()
+        notes_row.addWidget(self.notes_edit)
+        notes_copy_btn = QPushButton()
+        notes_copy_btn.setObjectName("copyValueBtn")
+        notes_copy_btn.setToolTip("Copia note")
+        notes_copy_btn.setFixedSize(22, 22)
+        notes_copy_btn.setStyleSheet("QPushButton#copyValueBtn { background: transparent; border: none; padding: 0; } QPushButton#copyValueBtn:hover { background: #4a9eff; border-radius: 4px; }")
+        notes_copy_btn.setIcon(QApplication.style().standardIcon(QStyle.SP_FileDialogDetailedView))
+        notes_copy_btn.clicked.connect(lambda: self.copy_to_clipboard(self.notes_edit.toPlainText()))
+        notes_row.addWidget(notes_copy_btn)
+        credential_layout.addRow("Note:", notes_row)
         buttons_layout = QHBoxLayout()
         self.save_btn = QPushButton("Salva Modifiche")
         self.save_btn.clicked.connect(self.save_credential_changes)
@@ -492,7 +547,7 @@ class ProfileWidget(QWidget):
         self.editing_profile.phone = self.phone_edit.text()
         self.editing_profile.address = self.address_edit.toPlainText()
         self.editing_profile.notes = self.notes_edit.toPlainText()
-        self.profile_manager.update_profile(self.editing_profile)
+        self.profile_manager.update_profile(self.editing_profile.id, self.editing_profile)
         self.profile_info.hide()
         self.stack.setCurrentWidget(self.profiles_widget)
         self.load_profiles()
@@ -548,6 +603,10 @@ class ProfileWidget(QWidget):
             # Se è stato deselezionato l'ultimo profilo selezionato
             if self.current_profile == profile:
                 self.current_profile = None
+
+    def copy_to_clipboard(self, value):
+        clipboard = QApplication.clipboard()
+        clipboard.setText(value)
 
 class NewProfileDialog(QDialog):
     """Dialog per la creazione di un nuovo profilo."""
