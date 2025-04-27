@@ -1,6 +1,6 @@
-# PsW - Password Manager
+# PsW - Password Manager (Alpha 1.3.0)
 
-## Work In Progress (more feature incoming)
+## 🔨 Work In Progress (more feature incoming)
 
 🔐 A modern, secure, and easy-to-use password manager.
 
