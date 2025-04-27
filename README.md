@@ -19,7 +19,11 @@
 - 🧩 **Extensible** and easy to customize
 - 🏷️ **Tags and categories** to organize credentials
 - ⚡ **Global shortcuts** for quick access
-- 🧪 **Prerelease**: new features in testing!
+- 🧪 **Prerelease**: Some features mentioned in the project's overall vision
+ or documentation may not yet be fully functional as they are still under
+ active development.
+ Currently, the primary focus is on the Windows version with the provided
+ `.exe`. Versions for other operating systems are planned for future development.
 
 ---
 
@@ -47,7 +51,7 @@
 
 ### 🖱️ Method 2: Run from Executable (.exe)
 
-1. **Download the files from the repository** (or from the `dist/` folder if already built)
+1. **Download the files from the release** (in the release you will find the .exe file)
 2. **Run directly:**
    - On Windows: double-click `PsW.exe`
    - No need to have Python installed!
