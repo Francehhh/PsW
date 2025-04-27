@@ -1,120 +1,119 @@
-<<<<<<< HEAD
 # PsW - Password Manager 🚀🔐
 
 ![status](https://img.shields.io/badge/status-prerelease-yellow) ![version](https://img.shields.io/badge/version-v1.4.3--alpha-blue)
 
-> **Prerilascio v1.4.3 alpha**
-> 
-> ⚠️ Questa versione è una *prerelease* destinata a test e feedback. Potrebbero esserci bug, funzionalità incomplete o modifiche frequenti. Usare con cautela e segnalare eventuali problemi tramite [Issue](https://github.com/Francehhh/PsW/issues).
+> **Pre-release v1.4.3 alpha**
+>
+> ⚠️ This version is a *prerelease* intended for testing and feedback. There may be bugs, incomplete features, or frequent changes. Use with caution and report any issues via [Issue](https://github.com/Francehhh/PsW/issues).
 
 ---
 
-## ✨ Caratteristiche Principali
+## ✨ Main Features
 
-- 🔒 **Crittografia End-to-End** (AES-256)
-- 👤 **Gestione Profili** multipli
-- ☁️ **Sincronizzazione Cloud** (Google Drive)
-- 🖥️ **Interfaccia Moderna** (PySide6)
-- 🛡️ **Protezione Master Password** (Argon2)
-- 💻 **Multi-piattaforma**: Windows, Linux, macOS
-- 🧩 **Estendibile** e facile da personalizzare
-- 🏷️ **Tag e categorie** per organizzare le credenziali
-- ⚡ **Shortcut globali** per accesso rapido
-- 🧪 **Prerilascio**: nuove feature in test!
+- 🔒 **End-to-End Encryption** (AES-256)
+- 👤 **Multiple Profile Management**
+- ☁️ **Cloud Synchronization** (Google Drive)
+- 🖥️ **Modern Interface** (PySide6)
+- 🛡️ **Master Password Protection** (Argon2)
+- 💻 **Cross-platform**: Windows, Linux, macOS
+- 🧩 **Extensible** and easy to customize
+- 🏷️ **Tags and categories** to organize credentials
+- ⚡ **Global shortcuts** for quick access
+- 🧪 **Prerelease**: new features in testing!
 
 ---
 
-## 🚀 Come Usare PsW
+## 🚀 How to Use PsW
 
-### 🐍 Metodo 1: Avvio da Sorgente (Python)
+### 🐍 Method 1: Run from Source (Python)
 
-1. **Clona il repository:**
+1. **Clone the repository:**
    ```bash
    git clone https://github.com/Francehhh/PsW.git
    cd PsW
    ```
-2. **Installa le dipendenze:**
+2. **Install dependencies:**
    ```bash
    pip install -r requirements.txt
    ```
-3. **Avvia l'applicazione:**
+3. **Start the application:**
    ```bash
    python main.py
    ```
 
-> 👨‍💻 *Consigliato per sviluppatori o chi vuole personalizzare il codice.*
+> 👨‍💻 *Recommended for developers or those who want to customize the code.*
 
 ---
 
-### 🖱️ Metodo 2: Avvio da Eseguibile (.exe)
+### 🖱️ Method 2: Run from Executable (.exe)
 
-1. **Scarica i file dalla repository** (o dalla cartella `dist/` se già buildato)
-2. **Esegui direttamente:**
-   - Su Windows: doppio click su `PsW.exe`
-   - Non serve Python installato!
+1. **Download the files from the repository** (or from the `dist/` folder if already built)
+2. **Run directly:**
+   - On Windows: double-click `PsW.exe`
+   - No need to have Python installed!
 
-> 🟢 *L'eseguibile include tutte le dipendenze e l'icona personalizzata.*
+> 🟢 *The executable includes all dependencies and the custom icon.*
 
 ---
 
-## 🗂️ Struttura del Progetto
+## 🗂️ Project Structure
 
 ```text
 PsW/
-├── src/                # Codice sorgente (core, ui, utils)
-├── tests/              # Test unitari
-├── dist/               # Eseguibili generati (.exe)
-├── build/              # File temporanei di build
+├── src/                # Source code (core, ui, utils)
+├── tests/              # Unit tests
+├── dist/               # Generated executables (.exe)
+├── build/              # Temporary build files
 ├── main.py             # Entry point
-├── PsW.ico             # Icona applicazione
-├── requirements.txt    # Dipendenze Python
-├── setup.py            # Script di setup
-├── VERSION             # Versione app
-├── LICENSE             # Licenza
-├── README.md           # Questo file
-├── .gitignore          # File ignorati da git
-├── PsWLayout.md        # Layout UI (ignorato da git)
-├── descrizione.md      # Descrizione tecnica
-├── progress.md         # Note di sviluppo
+├── PsW.ico             # Application icon
+├── requirements.txt    # Python dependencies
+├── setup.py            # Setup script
+├── VERSION             # App version
+├── LICENSE             # License
+├── README.md           # This file
+├── .gitignore          # Git ignored files
+├── PsWLayout.md        # UI layout (git ignored)
+├── descrizione.md      # Technical description
+├── progress.md         # Development notes
 └── ...
 ```
 
 ---
 
-## 🔐 Sicurezza
+## 🔐 Security
 
-- 🔑 Crittografia AES-256
-- 🧬 Key derivation Argon2
-- 🚫 Nessuna password di default
-- 🛡️ Validazione input rigorosa
-- 🕵️ Audit regolare del codice
-
----
-
-## 🤝 Contribuire
-
-1. Fai un fork del repository
-2. Crea un branch (`git checkout -b feature/nome`)
-3. Committa (`git commit -am 'Aggiungi feature'`)
-4. Pusha (`git push origin feature/nome`)
-5. Crea una Pull Request
+- 🔑 AES-256 encryption
+- 🧬 Argon2 key derivation
+- 🚫 No default passwords
+- 🛡️ Strict input validation
+- 🕵️ Regular code audit
 
 ---
 
-## 📜 Licenza
+## 🤝 Contributing
 
-MIT License - vedi [LICENSE](LICENSE)
-
----
-
-## 💬 Supporto & Contatti
-
-- [Apri una Issue su GitHub](https://github.com/Francehhh/PsW/issues)
-- [Documentazione tecnica](descrizione.md)
+1. Fork the repository
+2. Create a branch (`git checkout -b feature/name`)
+3. Commit (`git commit -am 'Add feature'`)
+4. Push (`git push origin feature/name`)
+5. Create a Pull Request
 
 ---
 
-## 🙏 Ringraziamenti
+## 📜 License
+
+MIT License - see [LICENSE](LICENSE)
+
+---
+
+## 💬 Support & Contacts
+
+- [Open an Issue on GitHub](https://github.com/Francehhh/PsW/issues)
+- [Technical documentation](descrizione.md)
+
+---
+
+## 🙏 Acknowledgements
 
 - PySide6 (Qt for Python)
 - cryptography
@@ -122,77 +121,4 @@ MIT License - vedi [LICENSE](LICENSE)
 
 ---
 
-> Powered by ❤️ Open Source. Sviluppato da [Francehhh](https://github.com/Francehhh/PsW) 
-=======
-# PsW - Password Manager (Alpha 1.3.0)
-
-## 🔨 Work In Progress (more feature incoming)
-
-🔐 A modern, secure, and easy-to-use password manager.
-
-## Key Features
-
-- **End-to-End Encryption**: Data protection with AES-256
-- **Profile Management**: Organize your credentials in separate profiles
-- **Cloud Synchronization**: Secure backup on Google Drive
-- **Modern Interface**: Clean and intuitive design
-- **Advanced Security**: Master password protection with Argon2
-- **Cross-Platform**: Support for Windows, Linux, and macOS
-
-## Installation
-
-### Prerequisites
-- Python 3.8+
-- pip
-
-### Steps
-1. Clone the repository:
-   ```bash
-   git clone [https://github.com/Francehhh/PsW.git](https://github.com/Francehhh/PsW.git)
-   cd PsW
-   ```
-
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. Run the application:
-   ```bash
-   python main.py
-   ```
-
-## Usage
-
-1. Upon first launch, create a secure master password
-2. Use the master password to access the application
-3. Create profiles to organize your credentials
-4. Add and manage credentials within profiles
-
-
-## Security
-
-- AES-256 encryption for data
-- Key derivation with Argon2
-- No default passwords
-- Strict input validation
-- Regular code audit
-
-## Contributing
-
-1. Fork the repository
-2. Create a branch for your feature (`git checkout -b feature/name`)
-3. Commit your changes (`git commit -am 'Add feature'`)
-4. Push to the branch (`git push origin feature/name`)
-5. Create a Pull Request
-
-## License
-
-MIT License - see [LICENSE](LICENSE) for details.
-
-## Specifications
-
-- PySide6 for the GUI
-- cryptography for encryption
-- Google Drive API for synchronization
->>>>>>> 968c5a70e7627a248501224c259899cd57183c8e
+> Powered by ❤️ Open Source. Developed by [Francehhh](https://github.com/Francehhh/PsW)
