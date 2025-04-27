@@ -17,7 +17,7 @@ from ..utils.sync_manager import SyncManager
 from .settings_dialog import SettingsDialog
 from .dashboard_widget import DashboardWidget
 from .profile_widget import ProfileWidget
-from .. import __version__
+from .. import __version__, __author__
 
 class MainWindow(QMainWindow):
     """
@@ -200,12 +200,14 @@ class MainWindow(QMainWindow):
             )
             
     def show_about(self):
-        """Mostra la finestra delle informazioni."""
+        """Mostra informazioni sull'applicazione."""
         QMessageBox.about(
             self,
             "Informazioni",
             f"PsW {__version__}\n\n"
-            "Un'applicazione sicura per la gestione delle credenziali."
+            f"Sviluppato da {__author__}\n\n"
+            "Un moderno gestore di password sicuro e facile da usare.\n"
+            "Proteggi le tue credenziali con crittografia AES-256."
         )
         
     def update_dashboard(self):

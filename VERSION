@@ -1,9 +1,9 @@
 # Versioning - PsW (Password Manager)
 
 ## Versione Corrente
-- **Versione**: Alpha 1.2.1
+- **Versione**: Alpha 1.3.0
 - **Fase di Sviluppo**: Alpha
-- **Data Ultimo Aggiornamento**: 2024-04-27
+- **Data Ultimo Aggiornamento**: 2024-04-28
 
 ## Note sulla Versione
 Miglioramenti significativi all'interfaccia utente e alla gestione delle credenziali:
@@ -12,23 +12,40 @@ Miglioramenti significativi all'interfaccia utente e alla gestione delle credenz
 - Nuova barra di navigazione semplificata
 - Sistema di selezione multipla per le credenziali
 - Ottimizzazione dei controlli e delle azioni utente
+- Rimozione password di default
+- Aggiornamento riferimenti autore
 
 ## Prossime Versioni
-- **Alpha 1.3.0**: Miglioramenti UI e UX
-- **Alpha 1.4.0**: Sincronizzazione cloud avanzata
-- **Alpha 2.0.0**: Versione stabile con nuove funzionalità
+- **Alpha 1.4.0**: Sistema di backup e sincronizzazione
+- **Alpha 2.0.0**: Completamento backend e sicurezza
 - **Beta 1.0.0**: Prima versione beta con tutte le funzionalità core
 
 ## Log delle Versioni
 
-### Alpha 1.2.1 (27/04/2024)
-- Miglioramenti design e interfaccia, rimozione password generator dalla dashboard
+### Alpha 1.3.0 (28/04/2024)
+- Rimossa password di default
+- Aggiornati riferimenti all'autore
+- Migliorata gestione delle credenziali
+- Ottimizzata la sicurezza generale
+- Aggiornata documentazione
 
 ### Alpha 1.2.0 (27/04/2024)
-- Aggiornamento nome app in PsW e miglioramenti generali
+- Riprogettata l'interfaccia di gestione credenziali
+- Rimosso il generatore password dalla dashboard
+- Aggiunto sistema di selezione multipla per le credenziali
+- Migliorata l'organizzazione dei pulsanti di azione
+- Ottimizzato il layout dei profili e delle credenziali
+- Aggiunta conferma per eliminazione multipla
 
 ### Alpha 1.1.0 (26/04/2024)
-- Implementazione base della sincronizzazione
+- Implementazione core dell'autenticazione
+- Sistema robusto di gestione errori
+- Ottimizzazione storage password
+- Miglioramenti UI/UX
+- Aggiornamento documentazione
 
 ### Alpha 1.0.0 (25/04/2024)
-- Prima versione funzionante 
+- Prima versione alfa
+- Implementazione base dell'interfaccia
+- Sistema di autenticazione iniziale
+- Gestione profili base 

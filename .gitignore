@@ -1,25 +1,40 @@
-# File di sistema
+# File sensibili
+descrizione.md
+progress.md
+data/auth.json
+data/credentials.json
+
+# Cache Python
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Distribuzione / packaging
+dist/
+build/
+*.egg-info/
+
+# Ambiente virtuale
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+
+# File di sistema
 .DS_Store
+Thumbs.db
 
 # File di ambiente e configurazione
 .env
 .venv
-env/
-venv/
 ENV/
 
 # File di build
-*.egg-info/
-dist/
-build/
 *.egg
 
 # File di IDE
-.idea/
-.vscode/
 *.swp
 *.swo
 .cursor/
@@ -44,10 +59,4 @@ htmlcov/
 
 # File di documentazione generati
 docs/_build/
-site/
-
-# File di documentazione privati
-descrizione.md
-progress.md
-PRIVATE*.md
-TODO.md 
+site/ 

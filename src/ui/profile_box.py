@@ -4,7 +4,7 @@ Widget per il box del profilo e la visualizzazione delle credenziali.
 
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel,
-    QFrame, QPushButton, QStyle, QApplication
+    QFrame, QPushButton, QStyle, QApplication, QCheckBox
 )
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QMouseEvent, QIcon
@@ -18,6 +18,7 @@ class ProfileBox(QFrame):
     add_credential = Signal(Profile)
     delete_credential = Signal(Credential)
     edit_profile = Signal(Profile)
+    selected_changed = Signal(Profile, bool)  # Nuovo segnale per la selezione
     
     def __init__(self, profile: Profile, parent=None):
         super().__init__(parent)
@@ -75,11 +76,33 @@ class ProfileBox(QFrame):
                 padding: 0px;
                 margin: 0px;
             }
+            QCheckBox {
+                margin-right: 8px;
+            }
+            QCheckBox::indicator {
+                width: 18px;
+                height: 18px;
+                border-radius: 4px;
+                border: 2px solid #4a9eff;
+            }
+            QCheckBox::indicator:checked {
+                background-color: #4a9eff;
+                image: url(check.png);
+            }
+            QCheckBox::indicator:hover {
+                border-color: #1976d2;
+            }
         """)
         main_layout = QHBoxLayout(self)
         main_layout.setSpacing(12)
         main_layout.setContentsMargins(16, 8, 16, 8)
         main_layout.setAlignment(Qt.AlignVCenter)
+
+        # Checkbox per selezione
+        self.select_checkbox = QCheckBox()
+        self.select_checkbox.clicked.connect(self.on_selection_changed)
+        main_layout.addWidget(self.select_checkbox)
+        
         # Colonna sinistra: nome profilo centrato
         name_col = QVBoxLayout()
         name_col.setAlignment(Qt.AlignVCenter | Qt.AlignHCenter)
@@ -88,6 +111,7 @@ class ProfileBox(QFrame):
         name_label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         name_col.addWidget(name_label)
         main_layout.addLayout(name_col)
+        
         # Colonna centrale: info centrate su due righe
         info_container = QWidget()
         info_container.setObjectName("container")
@@ -95,6 +119,7 @@ class ProfileBox(QFrame):
         info_layout.setSpacing(2)
         info_layout.setContentsMargins(0, 0, 0, 0)
         info_layout.setAlignment(Qt.AlignVCenter | Qt.AlignHCenter)
+        
         # Prima riga: Email e Username
         top_row = QHBoxLayout()
         top_row.setSpacing(4)
@@ -112,6 +137,7 @@ class ProfileBox(QFrame):
         top_row.addWidget(username_label)
         top_row.addWidget(username_value)
         info_layout.addLayout(top_row)
+        
         # Seconda riga: Telefono e Via
         bottom_row = QHBoxLayout()
         bottom_row.setSpacing(4)
@@ -130,21 +156,23 @@ class ProfileBox(QFrame):
         bottom_row.addWidget(address_label)
         bottom_row.addWidget(address_value)
         info_layout.addLayout(bottom_row)
-        main_layout.addWidget(info_container, 1)
-        # Pulsante modifica
-        edit_btn = QPushButton()
-        edit_btn.setObjectName("editBtn")
-        # Icona standard Qt
-        style = QApplication.style()
-        edit_btn.setIcon(style.standardIcon(QStyle.SP_FileDialogDetailedView))
-        edit_btn.setFixedSize(28, 28)
-        edit_btn.clicked.connect(lambda: self.edit_profile.emit(self.profile))
-        main_layout.addWidget(edit_btn)
-        # Abilita il doppio click
-        self.setMouseTracking(True)
         
-    def mouseDoubleClickEvent(self, event: QMouseEvent):
-        """Gestisce il doppio click sul box."""
+        main_layout.addWidget(info_container)
+        
+    def mousePressEvent(self, event: QMouseEvent):
+        """Gestisce il click sul box."""
         if event.button() == Qt.LeftButton:
-            self.double_clicked.emit(self.profile)
-            event.accept() 
+            if event.type() == QEvent.MouseButtonDblClick:
+                self.double_clicked.emit(self.profile)
+                
+    def on_selection_changed(self, checked: bool):
+        """Gestisce il cambio di stato della checkbox."""
+        self.selected_changed.emit(self.profile, checked)
+        
+    def is_selected(self) -> bool:
+        """Restituisce True se il profilo è selezionato."""
+        return self.select_checkbox.isChecked()
+        
+    def set_selected(self, selected: bool):
+        """Imposta lo stato di selezione del profilo."""
+        self.select_checkbox.setChecked(selected) 

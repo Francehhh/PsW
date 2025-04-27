@@ -53,6 +53,10 @@ class ProfileWidget(QWidget):
                 margin-right: 8px;
             }
             QPushButton#backBtn:hover { background-color: #5a6268; }
+            QPushButton#deleteBtn {
+                background-color: #dc3545;
+            }
+            QPushButton#deleteBtn:hover { background-color: #bb2d3b; }
             QPushButton#infoBtn {
                 background-color: transparent;
                 border: none;
@@ -83,6 +87,23 @@ class ProfileWidget(QWidget):
         self.title_label.setStyleSheet("font-size: 20px; font-weight: bold;")
         header_layout.addWidget(self.title_label)
         header_layout.addStretch()
+        
+        # Pulsanti azione profili (visibili solo nella vista profili)
+        self.profile_actions = QHBoxLayout()
+        self.profile_actions.setSpacing(8)
+        
+        # Pulsante nuovo profilo
+        self.new_profile_btn = QPushButton("Nuovo Profilo")
+        self.new_profile_btn.clicked.connect(self.show_new_profile_dialog)
+        self.profile_actions.addWidget(self.new_profile_btn)
+        
+        # Pulsante elimina profilo
+        self.delete_profile_btn = QPushButton("Elimina Profilo")
+        self.delete_profile_btn.setObjectName("deleteBtn")
+        self.delete_profile_btn.clicked.connect(self.delete_selected_profile)
+        self.profile_actions.addWidget(self.delete_profile_btn)
+        
+        header_layout.addLayout(self.profile_actions)
         
         main_layout.addWidget(self.header)
         
@@ -231,6 +252,7 @@ class ProfileWidget(QWidget):
             box.add_credential.connect(self.show_new_credential_dialog)
             box.delete_credential.connect(self.delete_credential)
             box.edit_profile.connect(self.on_edit_profile)
+            box.selected_changed.connect(self.on_profile_selection_changed)
             
             self.profiles_layout.addWidget(box)
             self.profile_boxes.append(box)
@@ -296,6 +318,8 @@ class ProfileWidget(QWidget):
         
     def show_credentials(self, profile: Profile):
         """Mostra le credenziali del profilo selezionato."""
+        self.new_profile_btn.hide()
+        self.delete_profile_btn.hide()
         self.header.show()
         self.profile_info.hide()  # Nascondi le informazioni del profilo
         
@@ -399,6 +423,8 @@ class ProfileWidget(QWidget):
     def show_profiles(self):
         """Mostra la lista dei profili."""
         self.header.show()
+        self.new_profile_btn.show()
+        self.delete_profile_btn.show()
         self.stack.setCurrentWidget(self.profiles_widget)
         
     def on_credential_selected(self, credential: Credential):
@@ -476,6 +502,52 @@ class ProfileWidget(QWidget):
         self.profile_info.hide()
         self.stack.setCurrentWidget(self.profiles_widget)
         self.editing_profile = None
+
+    def delete_selected_profile(self):
+        """Elimina i profili selezionati."""
+        # Ottieni i profili selezionati
+        selected_profiles = [box.profile for box in self.profile_boxes if box.is_selected()]
+        
+        if not selected_profiles:
+            QMessageBox.warning(self, "Nessun profilo selezionato", 
+                              "Seleziona almeno un profilo da eliminare.")
+            return
+            
+        reply = QMessageBox.question(
+            self,
+            "Conferma eliminazione",
+            f"Sei sicuro di voler eliminare {len(selected_profiles)} profili?\n"
+            "Questa azione eliminerà anche tutte le credenziali associate.",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
+        )
+        
+        if reply == QMessageBox.Yes:
+            for profile in selected_profiles:
+                # Elimina tutte le credenziali associate al profilo
+                credentials = self.credential_manager.get_profile_credentials(profile)
+                for credential in credentials:
+                    self.credential_manager.delete_credential(credential)
+                
+                # Elimina il profilo
+                self.profile_manager.delete_profile(profile.id)
+            
+            # Aggiorna l'interfaccia
+            self.current_profile = None
+            self.load_profiles()
+            self.show_profiles()
+            
+            QMessageBox.information(self, "Eliminazione completata", 
+                                  f"{len(selected_profiles)} profili sono stati eliminati con successo.")
+
+    def on_profile_selection_changed(self, profile: Profile, selected: bool):
+        """Gestisce il cambio di selezione di un profilo."""
+        if selected:
+            self.current_profile = profile
+        else:
+            # Se è stato deselezionato l'ultimo profilo selezionato
+            if self.current_profile == profile:
+                self.current_profile = None
 
 class NewProfileDialog(QDialog):
     """Dialog per la creazione di un nuovo profilo."""
