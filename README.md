@@ -1,5 +1,7 @@
 # PsW - Password Manager
 
+## Work In Progress (more feature incoming)
+
 🔐 A modern, secure, and easy-to-use password manager.
 
 ## Key Features
