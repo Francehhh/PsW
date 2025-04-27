@@ -13,14 +13,28 @@ __pycache__/
 dist/
 build/
 *.egg-info/
+*.egg
+*.spec
+
+# Eseguibili e binari
+*.exe
+*.dll
+*.so
+*.dylib
+*.pyd
 
 # Ambiente virtuale
 venv/
 env/
+.venv/
+ENV/
 
 # IDE
 .vscode/
 .idea/
+*.swp
+*.swo
+.cursor/
 
 # File di sistema
 .DS_Store
@@ -28,38 +42,50 @@ Thumbs.db
 
 # File di ambiente e configurazione
 .env
-.venv
-ENV/
-
-# File di build
-*.egg
-
-# File di IDE
-*.swp
-*.swo
-.cursor/
+*.key
+*.pem
 
 # File di dati sensibili
 data/*.json
 !data/example.json
-*.key
-*.pem
 
 # File temporanei
 *.log
 *.tmp
-.coverage
-htmlcov/
+*.bak
+*.old
 
-# File di cache
+# File di cache e test
 .pytest_cache/
 .coverage
 .tox/
 .nox/
+htmlcov/
 
 # File di documentazione generati
 docs/_build/
 site/
 
 # Documentazione e layout UI
-PsWLayout.md 
+PsWLayout.md
+
+# File di build PyInstaller
+*.manifest
+*.spec
+*.pyz
+*.pyzw
+
+# File di debug
+*.log
+*.pid
+*.seed
+*.pid.lock
+
+# File di configurazione locale
+*.local
+*.local.*
+
+# File di backup
+*.bak
+*.backup
+*~ 
