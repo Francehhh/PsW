@@ -51,7 +51,7 @@
 
 ### 🖱️ Method 2: Run from Executable (.exe)
 
-1. **Download the files from the release** (in the release you will find the .exe file)
+1. **Download the files from the release** (in the last release you will find the .exe file)
 2. **Run directly:**
    - On Windows: double-click `PsW.exe`
    - No need to have Python installed!
