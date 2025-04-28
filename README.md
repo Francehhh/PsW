@@ -68,15 +68,13 @@ PsW/
 ├── tests/              # Unit tests
 ├── dist/               # Generated executables (.exe)
 ├── build/              # Temporary build files
-├── main.py             # Entry point
-├── PsW.ico             # Application icon
+├── main.py             # Entry point            
 ├── requirements.txt    # Python dependencies
 ├── setup.py            # Setup script
 ├── VERSION             # App version
 ├── LICENSE             # License
 ├── README.md           # This file
 ├── .gitignore          # Git ignored files
-├── PsWLayout.md        # UI layout (git ignored)
 ├── descrizione.md      # Technical description
 ├── progress.md         # Development notes
 └── ...
