@@ -1,102 +1,111 @@
 # PsW - Password Manager 🚀🔐
 
-![status](https://img.shields.io/badge/status-prerelease-yellow) ![version](https://img.shields.io/badge/version-v1.4.3--alpha-blue)
+![status](https://img.shields.io/badge/status-alpha-red) ![version](https://img.shields.io/badge/version-v2.0.0--alpha-orange)
 
-> **Pre-release v1.4.3 alpha**
+> **Version Alfa 2.0.0**
 >
-> ⚠️ This version is a *prerelease* intended for testing and feedback. There may be bugs, incomplete features, or frequent changes. Use with caution and report any issues via [Issue](https://github.com/Francehhh/PsW/issues).
+> ⚠️ This is an **alpha** version intended for development, testing, and feedback. Expect bugs, incomplete features, and potentially breaking changes. Use with caution and report any issues via [Issues](https://github.com/Francehh/PsW/issues).
 
 ---
 
 ## ✨ Main Features
 
-- 🔒 **End-to-End Encryption** (AES-256)
+- 🔒 **Local Encryption** (AES-256 via Fernet)
+- 🔑 **Robust Master Password Protection** (PBKDF2-HMAC-SHA256)
 - 👤 **Multiple Profile Management**
-- ☁️ **Cloud Synchronization** (Google Drive)
-- 🖥️ **Modern Interface** (PySide6)
-- 🛡️ **Master Password Protection** (Argon2)
-- 💻 **Cross-platform**: Windows, Linux, macOS
-- 🧩 **Extensible** and easy to customize
-- 🏷️ **Tags and categories** to organize credentials
-- ⚡ **Global shortcuts** for quick access
-- 🧪 **Prerelease**: new features in testing!
+- 🗄️ **SQLite Database Backend** (replaces JSON files)
+- 🖥️ **Modernized Interface** (PySide6 with custom styling and animations)
+- 🖱️ **Quick Credential Access** via Global Hotkey (basic implementation)
+- ☁️ **Cloud Synchronization** (Google Drive - *basic setup, sync logic pending*)
+- 🛡️ **Secure Credential Storage**
+- 💻 **Cross-platform**: Windows, Linux, macOS (Linux/macOS less tested)
+- 🏷️ **Basic Credential Organization**
+- ⚡ **Password Generation**
 
 ---
 
-## 🚀 How to Use PsW
+## 🚀 Getting Started
 
-### 🐍 Method 1: Run from Source (Python)
+### 🐍 Option 1: Run from Source (Recommended for Dev/Testing)
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/Francehhh/PsW.git
-   cd PsW
-   ```
-2. **Install dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. **Start the application:**
-   ```bash
-   python main.py
-   ```
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/Francehh/PsW.git
+    cd PsW
+    ```
+2.  **Create a virtual environment (Recommended):**
+    ```bash
+    python -m venv .venv
+    # Activate it:
+    # Windows:
+    .venv\Scripts\activate
+    # Linux/macOS:
+    # source .venv/bin/activate 
+    ```
+3.  **Install dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+4.  **Run the application:**
+    ```bash
+    python main.py
+    ```
 
-> 👨‍💻 *Recommended for developers or those who want to customize the code.*
+### 🏗️ Option 2: Build the Executable (Using PyInstaller)
+
+1.  **Ensure prerequisites are met:**
+    *   Python installed.
+    *   Repository cloned and dependencies installed (see Option 1).
+    *   PyInstaller installed: `pip install pyinstaller`
+2.  **Navigate to the project root directory** (where `main.py` is).
+3.  **Run PyInstaller:**
+    ```bash
+    pyinstaller --noconsole --onefile --windowed --icon=src/ui/icons/icon.ico main.py 
+    ```
+    *   `--noconsole` or `--windowed`: Prevents the command prompt from showing when the app runs.
+    *   `--onefile`: Packages everything into a single `.exe` file.
+    *   `--icon`: Specifies the application icon (adjust path if needed).
+4.  **Find the executable:** The generated `.exe` file will be inside the `dist` folder.
+5.  **Run:** Double-click the `.exe` file in the `dist` folder to run the application.
 
 ---
 
-### 🖱️ Method 2: Run from Executable (.exe)
-
-1. **Download the files from the repository** (or from the `dist/` folder if already built)
-2. **Run directly:**
-   - On Windows: double-click `PsW.exe`
-   - No need to have Python installed!
-
-> 🟢 *The executable includes all dependencies and the custom icon.*
-
----
-
-## 🗂️ Project Structure
+## 🗂️ Project Structure (Simplified)
 
 ```text
 PsW/
 ├── src/                # Source code (core, ui, utils)
-├── tests/              # Unit tests
-├── dist/               # Generated executables (.exe)
-├── build/              # Temporary build files
-├── main.py             # Entry point
-├── PsW.ico             # Application icon
+│   ├── core/           # Core logic (managers, data classes)
+│   ├── ui/             # User interface (widgets, dialogs, icons)
+│   └── utils/          # Utility functions (crypto, sync)
+├── data/               # Application data (database - *ignored by git*)
+├── tests/              # Unit tests (*structure pending*)
+├── main.py             # Application entry point
 ├── requirements.txt    # Python dependencies
-├── setup.py            # Setup script
-├── VERSION             # App version
-├── LICENSE             # License
 ├── README.md           # This file
-├── .gitignore          # Git ignored files
-├── PsWLayout.md        # UI layout (git ignored)
-├── descrizione.md      # Technical description
-├── progress.md         # Development notes
-└── ...
+├── progress.md         # Development progress tracker
+├── LICENSE             # License
+└── .gitignore          # Git ignored files
 ```
 
 ---
 
-## 🔐 Security
+## 🔐 Security Overview
 
-- 🔑 AES-256 encryption
-- 🧬 Argon2 key derivation
-- 🚫 No default passwords
-- 🛡️ Strict input validation
-- 🕵️ Regular code audit
+- 🔑 **Master Key Derivation:** PBKDF2-HMAC-SHA256 with high iterations and unique salt.
+- 🔒 **Data Encryption:** AES-128-GCM via Fernet for sensitive fields in the database.
+- 💾 **Storage:** SQLite database (`data/pswcursor_data.db`) stores application data. Sensitive fields are encrypted.
+- ⚠️ **Known Considerations:** See `progress.md` for details on clipboard security, input validation needs, and in-memory key handling trade-offs.
 
 ---
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a branch (`git checkout -b feature/name`)
-3. Commit (`git commit -am 'Add feature'`)
-4. Push (`git push origin feature/name`)
-5. Create a Pull Request
+1.  Fork the repository
+2.  Create a branch (`git checkout -b feature/your-feature`)
+3.  Commit your changes (`git commit -am 'Add some feature'`)
+4.  Push to the branch (`git push origin feature/your-feature`)
+5.  Create a new Pull Request
 
 ---
 
@@ -108,17 +117,8 @@ MIT License - see [LICENSE](LICENSE)
 
 ## 💬 Support & Contacts
 
-- [Open an Issue on GitHub](https://github.com/Francehhh/PsW/issues)
-- [Technical documentation](descrizione.md)
+- [Open an Issue on GitHub](https://github.com/Francehh/PsW/issues)
 
 ---
 
-## 🙏 Acknowledgements
-
-- PySide6 (Qt for Python)
-- cryptography
-- Google Drive API
-
----
-
-> Powered by ❤️ Open Source. Developed by [Francehhh](https://github.com/Francehhh/PsW)
+> Developed by [Francehh](https://github.com/Francehh)

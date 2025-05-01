@@ -4,10 +4,11 @@ Widget per il box del profilo e la visualizzazione delle credenziali.
 
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel,
-    QFrame, QPushButton, QStyle, QApplication, QCheckBox
+    QFrame, QPushButton, QStyle, QApplication, QCheckBox, QGridLayout, QSizePolicy,
+    QGraphicsOpacityEffect, QGraphicsDropShadowEffect
 )
-from PySide6.QtCore import Qt, Signal, QEvent
-from PySide6.QtGui import QMouseEvent, QIcon
+from PySide6.QtCore import Qt, Signal, QEvent, Property, QPoint, QPropertyAnimation, QEasingCurve
+from PySide6.QtGui import QMouseEvent, QIcon, QFont, QCursor, QColor, QPalette
 from ..core.profile_manager import Profile
 from ..core.credential import Credential
 
@@ -23,150 +24,153 @@ class ProfileBox(QFrame):
     def __init__(self, profile: Profile, parent=None):
         super().__init__(parent)
         self.profile = profile
+        self.setObjectName("profileBox")
+        self.setProperty("selected", False)
+        
+        # Imposta colori base e hover (da QSS)
+        self._base_color = QColor("#161B22") # BG_BASE da MODERN_STYLESHEET
+        self._hover_color = QColor("#21262D") # BG_SECONDARY da MODERN_STYLESHEET
+        self._current_bg_color = self._base_color
+        
+        # Abilita autoFillBackground per QPalette
+        self.setAutoFillBackground(True)
+        self.update_background(self._current_bg_color)
+        
         self.setup_ui()
+        self.setup_background_animation() # Nuova funzione
         
     def setup_ui(self):
         """Configura l'interfaccia del box."""
-        self.setFrameShape(QFrame.StyledPanel)
-        self.setStyleSheet("""
-            QFrame {
-                background-color: #2b2b2b;
-                border-radius: 10px;
-                margin: 4px;
-                max-width: 420px;
-                min-height: 80px;
-                max-height: 90px;
-            }
-            QLabel {
-                color: #ffffff;
-                background: transparent;
-            }
-            QLabel#profileName {
-                font-size: 16px;
-                font-weight: bold;
-                color: #ffffff;
-                padding: 0px;
-                margin: 0px;
-            }
-            QLabel#infoLabel {
-                color: #aaaaaa;
-                font-size: 12px;
-                padding: 0px;
-                margin: 0px;
-            }
-            QLabel#infoValue {
-                color: #ffffff;
-                font-size: 12px;
-                padding: 0px;
-                margin: 0px;
-                margin-right: 12px;
-            }
-            QPushButton#editBtn {
-                background: transparent;
-                border: none;
-                padding: 0px;
-                margin: 0px;
-            }
-            QPushButton#editBtn:hover {
-                background: #444444;
-                border-radius: 6px;
-            }
-            QWidget#container {
-                background: transparent;
-                padding: 0px;
-                margin: 0px;
-            }
-            QCheckBox {
-                margin-right: 8px;
-            }
-            QCheckBox::indicator {
-                width: 18px;
-                height: 18px;
-                border-radius: 4px;
-                border: 2px solid #4a9eff;
-            }
-            QCheckBox::indicator:checked {
-                background-color: #4a9eff;
-                image: url(check.png);
-            }
-            QCheckBox::indicator:hover {
-                border-color: #1976d2;
-            }
-        """)
-        main_layout = QHBoxLayout(self)
-        main_layout.setSpacing(12)
-        main_layout.setContentsMargins(16, 8, 16, 8)
-        main_layout.setAlignment(Qt.AlignVCenter)
+        layout = QVBoxLayout(self)
+        layout.setSpacing(8)
+        layout.setContentsMargins(12, 10, 12, 10)
+
+        top_row_layout = QHBoxLayout()
+        top_row_layout.setSpacing(10)
 
         # Checkbox per selezione
         self.select_checkbox = QCheckBox()
         self.select_checkbox.clicked.connect(self.on_selection_changed)
-        main_layout.addWidget(self.select_checkbox)
+        top_row_layout.addWidget(self.select_checkbox, 0, Qt.AlignTop)
         
-        # Colonna sinistra: nome profilo centrato
-        name_col = QVBoxLayout()
-        name_col.setAlignment(Qt.AlignVCenter | Qt.AlignHCenter)
+        # Colonna nome profilo 
         name_label = QLabel(self.profile.name)
-        name_label.setObjectName("profileName")
-        name_label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-        name_col.addWidget(name_label)
-        main_layout.addLayout(name_col)
+        name_label.setObjectName("profileNameLabel")
+        name_label.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        top_row_layout.addWidget(name_label, 1)
+
+        # Pulsante di modifica (a destra del nome)
+        edit_btn = QPushButton()
+        edit_btn.setObjectName("editProfileBtn")
+        icon = QApplication.style().standardIcon(QStyle.SP_FileDialogDetailedView)
+        try:
+             # Try to get a pencil icon (might require theme support)
+             pencil_icon = QIcon.fromTheme("document-edit", icon)
+             if not pencil_icon.isNull(): icon = pencil_icon
+        except Exception:
+             pass
+        edit_btn.setIcon(icon)
+        edit_btn.setFixedSize(22, 22)
+        edit_btn.setToolTip("Modifica Profilo")
+        edit_btn.setStyleSheet("QPushButton#editProfileBtn { background: transparent; border: none; padding: 0;} QPushButton#editProfileBtn:hover { background: #444; border-radius: 3px; }")
+        edit_btn.clicked.connect(lambda: self.edit_profile.emit(self.profile))
+        top_row_layout.addWidget(edit_btn, 0, Qt.AlignTop)
         
-        # Colonna centrale: info centrate su due righe
+        layout.addLayout(top_row_layout)
+
+        # Info container (Email, User, Tel, Via) - Keep compact
         info_container = QWidget()
-        info_container.setObjectName("container")
-        info_layout = QVBoxLayout(info_container)
-        info_layout.setSpacing(2)
-        info_layout.setContentsMargins(0, 0, 0, 0)
-        info_layout.setAlignment(Qt.AlignVCenter | Qt.AlignHCenter)
+        info_container.setObjectName("infoGridWidget")
+        info_layout = QGridLayout(info_container)
+        info_layout.setSpacing(5)
+        info_layout.setContentsMargins(0, 5, 0, 0)
+        info_layout.setColumnStretch(1, 1)
         
-        # Prima riga: Email e Username
-        top_row = QHBoxLayout()
-        top_row.setSpacing(4)
-        top_row.setAlignment(Qt.AlignHCenter)
+        # Email
         email_label = QLabel("Email:")
         email_label.setObjectName("infoLabel")
         email_value = QLabel(self.profile.email or "-")
         email_value.setObjectName("infoValue")
+        email_value.setToolTip(self.profile.email or "")
+        info_layout.addWidget(email_label, 0, 0)
+        info_layout.addWidget(email_value, 0, 1)
+
+        # Username
         username_label = QLabel("Username:")
         username_label.setObjectName("infoLabel")
         username_value = QLabel(self.profile.username or "-")
         username_value.setObjectName("infoValue")
-        top_row.addWidget(email_label)
-        top_row.addWidget(email_value)
-        top_row.addWidget(username_label)
-        top_row.addWidget(username_value)
-        info_layout.addLayout(top_row)
+        username_value.setToolTip(self.profile.username or "")
+        info_layout.addWidget(username_label, 1, 0)
+        info_layout.addWidget(username_value, 1, 1)
         
-        # Seconda riga: Telefono e Via
-        bottom_row = QHBoxLayout()
-        bottom_row.setSpacing(4)
-        bottom_row.setAlignment(Qt.AlignHCenter)
-        phone_label = QLabel("Telefono:")
+        # Telefono
+        phone_label = QLabel("Tel:")
         phone_label.setObjectName("infoLabel")
         phone_value = QLabel(self.profile.phone or "-")
         phone_value.setObjectName("infoValue")
+        phone_value.setToolTip(self.profile.phone or "")
+        info_layout.addWidget(phone_label, 0, 2)
+        info_layout.addWidget(phone_value, 0, 3)
+
+        # Via (Indirizzo)
         address_label = QLabel("Via:")
         address_label.setObjectName("infoLabel")
-        address_text = self.profile.address[:25] + "..." if self.profile.address and len(self.profile.address) > 25 else (self.profile.address or "-")
+        address_text = self.profile.address[:20] + "..." if self.profile.address and len(self.profile.address) > 20 else (self.profile.address or "-")
         address_value = QLabel(address_text)
         address_value.setObjectName("infoValue")
-        bottom_row.addWidget(phone_label)
-        bottom_row.addWidget(phone_value)
-        bottom_row.addWidget(address_label)
-        bottom_row.addWidget(address_value)
-        info_layout.addLayout(bottom_row)
+        address_value.setToolTip(self.profile.address or "")
+        info_layout.addWidget(address_label, 1, 2)
+        info_layout.addWidget(address_value, 1, 3)
+
+        layout.addWidget(info_container)
         
-        main_layout.addWidget(info_container)
+        # Ensure the main frame respects the size policy of the layout
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
         
-        # Pulsante di modifica
-        edit_btn = QPushButton()
-        edit_btn.setObjectName("editBtn")
-        edit_btn.setIcon(QApplication.style().standardIcon(QStyle.SP_FileDialogDetailedView))
-        edit_btn.setFixedSize(24, 24)
-        edit_btn.clicked.connect(lambda: self.edit_profile.emit(self.profile))
-        main_layout.addWidget(edit_btn)
+    def setup_background_animation(self):
+        """Configura l'animazione per il colore di sfondo."""
+        self.bg_color_animation = QPropertyAnimation(self, b"_backgroundColor", self)
+        self.bg_color_animation.setDuration(200) # Durata animazione (ms)
+        self.bg_color_animation.setEasingCurve(QEasingCurve.OutQuad)
         
+    # --- Property per il colore di sfondo --- 
+    def _get_background_color(self) -> QColor:
+        return self._current_bg_color
+
+    def _set_background_color(self, color: QColor):
+        self._current_bg_color = color
+        self.update_background(color)
+
+    _backgroundColor = Property(QColor, _get_background_color, _set_background_color)
+    # --- Fine Property --- 
+    
+    def update_background(self, color: QColor):
+        """Aggiorna il colore di sfondo usando QPalette."""
+        palette = self.palette()
+        palette.setColor(QPalette.Window, color)
+        self.setPalette(palette)
+        
+    def enterEvent(self, event): # Override
+        """Anima il colore di sfondo verso lo stato hover."""
+        # --- RIPRISTINO ANIMAZIONE COLORE SFONDO ---
+        self.bg_color_animation.stop()
+        self.bg_color_animation.setStartValue(self._current_bg_color)
+        self.bg_color_animation.setEndValue(self._hover_color)
+        self.bg_color_animation.start()
+        # --- FINE RIPRISTINO ---
+        super().enterEvent(event)
+
+    def leaveEvent(self, event): # Override
+        """Anima il colore di sfondo verso lo stato base."""
+        # --- RIPRISTINO ANIMAZIONE COLORE SFONDO ---
+        self.bg_color_animation.stop()
+        self.bg_color_animation.setStartValue(self._current_bg_color)
+        self.bg_color_animation.setEndValue(self._base_color)
+        self.bg_color_animation.start()
+        # --- FINE RIPRISTINO ---
+        super().leaveEvent(event)
+
     def mousePressEvent(self, event: QMouseEvent):
         """Gestisce il click sul box."""
         if event.button() == Qt.LeftButton:
@@ -183,4 +187,7 @@ class ProfileBox(QFrame):
         
     def set_selected(self, selected: bool):
         """Imposta lo stato di selezione del profilo."""
-        self.select_checkbox.setChecked(selected) 
+        self.setProperty("selected", selected)
+        self.style().unpolish(self)
+        self.style().polish(self)
+        self.update() 

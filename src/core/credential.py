@@ -2,36 +2,33 @@
 Modulo per la gestione delle credenziali.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional, List
 from datetime import datetime
+import uuid
 
 @dataclass
 class Credential:
     """
-    Rappresenta una credenziale utente.
-    
-    Attributes:
-        id: Identificatore univoco della credenziale
-        profile_id: ID del profilo associato
-        app_name: Nome dell'applicazione
-        username: Username
-        password: Password (crittografata)
-        url: URL dell'applicazione (opzionale)
-        notes: Note aggiuntive (opzionale)
-        created_at: Data di creazione
-        updated_at: Data di ultimo aggiornamento
+    Rappresenta una credenziale salvata.
     """
-    id: str
-    profile_id: str
+    # --- Fields WITHOUT default values FIRST ---
+    profile_id: str 
     app_name: str
-    username: str
-    password: str
-    url: Optional[str] = None
-    notes: Optional[str] = None
+    username: str # Will be encrypted
+    password: str # Will be encrypted
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[str] = None
+    
+    # --- Fields WITH default values or factories SECOND ---
+    id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    url: Optional[str] = None # Will be encrypted
+    notes: Optional[str] = None # Will be encrypted
     created_at: str = None
     updated_at: str = None
-    
+    is_encrypted_in_memory: bool = False
+
     def __post_init__(self):
         """Inizializza le date se non specificate."""
         if self.created_at is None:
@@ -42,18 +39,21 @@ class Credential:
     def to_dict(self) -> dict:
         """
         Converte la credenziale in un dizionario.
+        (Potrebbe essere sostituito da dataclasses.asdict se appropriato)
         
         Returns:
             Dizionario con i dati della credenziale
         """
         return {
-            "id": self.id,
+            # Ensure correct order for reconstruction if needed
             "profile_id": self.profile_id,
             "app_name": self.app_name,
             "username": self.username,
             "password": self.password,
+            "id": self.id,
             "url": self.url,
             "notes": self.notes,
             "created_at": self.created_at,
             "updated_at": self.updated_at
+            # is_encrypted_in_memory is transient, not included in dict for saving
         } 

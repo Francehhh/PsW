@@ -82,14 +82,16 @@ class DashboardWidget(QWidget):
         
         layout.addLayout(stats_grid)
         
-        # Sezione azioni rapide
-        quick_actions = QHBoxLayout()
+        # Sezione azioni rapide - Rimuovere o commentare
+        # quick_actions = QHBoxLayout()
+        # 
+        # add_profile_btn = QPushButton("Nuovo Profilo")
+        # add_profile_btn.clicked.connect(self.show_add_profile)
+        # quick_actions.addWidget(add_profile_btn)
+        # 
+        # layout.addLayout(quick_actions)
         
-        add_profile_btn = QPushButton("Nuovo Profilo")
-        add_profile_btn.clicked.connect(self.show_add_profile)
-        quick_actions.addWidget(add_profile_btn)
-        
-        layout.addLayout(quick_actions)
+        layout.addStretch() # Add stretch to push elements up
         
     def create_stat_card(self, title: str, value: str, description: str) -> QFrame:
         """
@@ -127,50 +129,115 @@ class DashboardWidget(QWidget):
         self.value_labels[title] = value_label
         
         desc_label = QLabel(description)
-        desc_label.setStyleSheet("color: #aaaaaa;")
+        # Use object name for QSS targeting
+        desc_label.setObjectName("statDescLabel") 
+        # desc_label.setStyleSheet("color: #aaaaaa;") # Removed, handled globally
         desc_label.setWordWrap(True)
         
         layout.addWidget(title_label)
         layout.addWidget(value_label)
         layout.addWidget(desc_label)
         
+        # Set object name for the card itself for QSS
+        card.setObjectName("statCard") 
+        # card.setFrameShape(QFrame.StyledPanel) # Shape might conflict with QSS border-radius
+        # card.setStyleSheet(""" # Removed, handled globally by #statCard or .glassPane
+        #     QFrame {
+        #         background-color: #2b2b2b;
+        #         border-radius: 10px;
+        #         padding: 15px;
+        #     }
+        # """)
+        card.setProperty("class", "glassPane") # Apply the glassPane class
+        
         return card
         
     def update_stats(self):
-        """Aggiorna le statistiche mostrate."""
-        # Aggiorna il conteggio dei profili
-        if self.value_labels["Profili"]:
-            self.value_labels["Profili"].setText(
-                str(len(self.profile_manager.profiles))
-            )
+        """Aggiorna le statistiche mostrate usando i metodi pubblici dei manager."""
+        print("[DashboardWidget] Updating stats...")
         
-        # Aggiorna il conteggio delle credenziali
-        if self.value_labels["Credenziali"]:
-            self.value_labels["Credenziali"].setText(
-                str(len(self.credential_manager.credentials))
-            )
+        # --- Profile Stats --- 
+        try:
+            # Use public getter for profiles
+            all_profiles = self.profile_manager.get_all_profiles()
+            total_profiles = len(all_profiles)
+            if self.value_labels.get("Profili"):
+                self.value_labels["Profili"].setText(str(total_profiles))
+            else:
+                 print("[DashboardWidget] Warning: Label for 'Profili' not found in value_labels.")
+        except Exception as e:
+            print(f"[DashboardWidget] Error updating profile stats: {e}")
+            if self.value_labels.get("Profili"):
+                self.value_labels["Profili"].setText("Errore")
+
+        # --- Credential Stats --- 
+        total_credentials = 0
+        secure_count = 0
+        compromised_count = 0
+        weak_count = 0 # Defined as not compromised and not secure
         
-        # Aggiorna il conteggio delle password sicure
-        if self.value_labels["Password Sicure"]:
-            secure_count = sum(
-                1 for cred in self.credential_manager.credentials
-                if self.credential_manager.is_password_secure(cred.password)
-            )
-            self.value_labels["Password Sicure"].setText(
-                str(secure_count)
-            )
+        try:
+            # --- CORREZIONE: Itera sui profili per ottenere le credenziali --- 
+            all_profiles = self.profile_manager.get_all_profiles()
+            all_credentials = []
+            for profile in all_profiles:
+                 # Assumiamo che Profile abbia un attributo 'id' valido
+                 if profile.id is not None:
+                      creds_for_profile = self.credential_manager.get_profile_credentials(profile.id)
+                      all_credentials.extend(creds_for_profile)
+                 else:
+                      print(f"[DashboardWidget] Warning: Profile '{profile.name}' has no ID, skipping credentials.")
+            # --- FINE CORREZIONE ---
+            
+            total_credentials = len(all_credentials)
+
+            # Calculate password stats on the collected credentials
+            for cred in all_credentials:
+                # La password in 'cred.password' dovrebbe essere già decrittata
+                if cred.password: # Check if password exists (non None or empty)
+                    if self.credential_manager.is_password_compromised(cred.password):
+                        compromised_count += 1
+                    elif self.credential_manager.is_password_secure(cred.password):
+                        secure_count += 1
+                    else:
+                         weak_count += 1 # Neither compromised nor secure = weak
+                # else: Potremmo contare le password vuote o mancanti se necessario
+
+            # Update Labels using the references stored in self.value_labels
+            if self.value_labels.get("Credenziali"):
+                self.value_labels["Credenziali"].setText(str(total_credentials))
+            else:
+                 print("[DashboardWidget] Warning: Label for 'Credenziali' not found in value_labels.")
+                 
+            if self.value_labels.get("Password Sicure"):
+                 # Note: The card title is "Password Sicure" but logic calculates `secure_count`
+                self.value_labels["Password Sicure"].setText(str(secure_count))
+            else:
+                 print("[DashboardWidget] Warning: Label for 'Password Sicure' not found in value_labels.")
+                 
+            if self.value_labels.get("Password Compromesse"):
+                 # Note: The card title is "Password Compromesse", logic calculates `compromised_count`
+                self.value_labels["Password Compromesse"].setText(str(compromised_count))
+            else:
+                 print("[DashboardWidget] Warning: Label for 'Password Compromesse' not found in value_labels.")
+                 
+            # Optional: Update a label for weak passwords if you add a card for it
+            # if self.value_labels.get("Password Deboli"):
+            #    self.value_labels["Password Deboli"].setText(str(weak_count))
+
+        except Exception as e:
+            print(f"[DashboardWidget] Error updating credential stats: {e}")
+            # Set relevant labels to "Errore" on failure
+            if self.value_labels.get("Credenziali"):
+                self.value_labels["Credenziali"].setText("Errore")
+            if self.value_labels.get("Password Sicure"):
+                self.value_labels["Password Sicure"].setText("Errore")
+            if self.value_labels.get("Password Compromesse"):
+                self.value_labels["Password Compromesse"].setText("Errore")
         
-        # Aggiorna il conteggio delle password compromesse
-        if self.value_labels["Password Compromesse"]:
-            compromised_count = sum(
-                1 for cred in self.credential_manager.credentials
-                if self.credential_manager.is_password_compromised(cred.password)
-            )
-            self.value_labels["Password Compromesse"].setText(
-                str(compromised_count)
-            )
-        
-    def show_add_profile(self):
-        """Mostra la finestra per aggiungere un nuovo profilo."""
-        # Implementa la logica per aggiungere un profilo
-        pass 
+        print("[DashboardWidget] Stats update complete.")
+
+    # def show_add_profile(self):
+    #     """Mostra la finestra per aggiungere un nuovo profilo."""
+    #     # Implementa la logica per aggiungere un profilo
+    #     pass 

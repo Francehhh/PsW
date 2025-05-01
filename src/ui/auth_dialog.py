@@ -8,25 +8,29 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Signal, Qt
 from PySide6.QtGui import QFont
+from typing import Optional
 
-from src.core.auth_manager import AuthManager
+from ..utils.sync_manager import SyncManager
 
 class AuthDialog(QDialog):
     """Dialog per l'autenticazione dell'utente."""
     
     authenticated = Signal(str)
     
-    def __init__(self, parent=None):
+    def __init__(self, sync_manager: SyncManager, parent=None):
         super().__init__(parent)
-        self.auth_manager = AuthManager()
-        self.setWindowTitle("Autenticazione")
+        self.setWindowTitle("Autenticazione Richiesta")
         self.setModal(True)
+        self.sync_manager = sync_manager
+        self.password: Optional[str] = None
+        self.setObjectName("AuthDialog")
+        self.setProperty("class", "glassPane")
         self.setFixedSize(400, 200)
         self.setup_ui()
         
     def setup_ui(self):
         """Configura l'interfaccia utente."""
-        layout = QVBoxLayout()
+        layout = QVBoxLayout(self)
         layout.setSpacing(10)
         layout.setContentsMargins(20, 20, 20, 20)
         
@@ -103,8 +107,10 @@ class AuthDialog(QDialog):
             )
             return
             
-        if self.auth_manager.verify_password(password):
-            self.authenticated.emit(password)
+        is_correct = self.sync_manager._verify_session_master_password(password)
+            
+        if is_correct:
+            self.password = password
             self.accept()
         else:
             QMessageBox.warning(

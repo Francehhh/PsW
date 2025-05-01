@@ -16,8 +16,10 @@ class RegistrationDialog(QDialog):
     
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Registrazione Password Master")
+        self.setWindowTitle("Registrazione - Imposta Master Password")
         self.setModal(True)
+        self.setObjectName("RegistrationDialog")
+        self.setProperty("class", "glassPane")
         self.setFixedSize(400, 300)
         self.setup_ui()
         
@@ -42,26 +44,12 @@ class RegistrationDialog(QDialog):
         self.password_edit = QLineEdit()
         self.password_edit.setPlaceholderText("Inserisci la password master")
         self.password_edit.setEchoMode(QLineEdit.Password)
-        self.password_edit.setStyleSheet("""
-            QLineEdit {
-                padding: 8px;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-            }
-        """)
         layout.addWidget(self.password_edit)
         
         # Campo conferma password
         self.confirm_edit = QLineEdit()
         self.confirm_edit.setPlaceholderText("Conferma la password master")
         self.confirm_edit.setEchoMode(QLineEdit.Password)
-        self.confirm_edit.setStyleSheet("""
-            QLineEdit {
-                padding: 8px;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-            }
-        """)
         layout.addWidget(self.confirm_edit)
         
         # Pulsanti
