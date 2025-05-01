@@ -21,6 +21,7 @@
 - 💻 **Cross-platform**: Windows, Linux, macOS (Linux/macOS less tested)
 - 🏷️ **Basic Credential Organization**
 - ⚡ **Password Generation**
+- ❗️ **some features are not yet available, with the next updates PsW will allow users to use them all!**
 
 ---
 
@@ -95,7 +96,6 @@ PsW/
 - 🔑 **Master Key Derivation:** PBKDF2-HMAC-SHA256 with high iterations and unique salt.
 - 🔒 **Data Encryption:** AES-128-GCM via Fernet for sensitive fields in the database.
 - 💾 **Storage:** SQLite database (`data/pswcursor_data.db`) stores application data. Sensitive fields are encrypted.
-- ⚠️ **Known Considerations:** See `progress.md` for details on clipboard security, input validation needs, and in-memory key handling trade-offs.
 
 ---
 
